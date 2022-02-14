@@ -3,10 +3,14 @@ package com.company;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.io.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 
 public class Screen extends JFrame{
     private JPanel panelTop;
@@ -22,6 +26,8 @@ public class Screen extends JFrame{
     private JLabel labelAge;
     private JTextField textDateOfBirth;
     private JPanel panelMain;
+    private JButton ClearAll;
+    private JPanel panelPic;
     private ArrayList<Person> people;
     private DefaultListModel listPeopleModel;
 
@@ -38,23 +44,25 @@ public class Screen extends JFrame{
         buttonNew.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int personNumber = listPeople.getSelectedIndex();
-                if(personNumber >= 0){
-                    Person p = new Person(textName.getText(), textEmail.getText(),
-                            textPhoneNumber.getText(), textDateOfBirth.getText());
-                    Person p = people.get(personNumber);
-                    p.setName( textName.getText());
-                    p.setEmail(textName.getText());
-                    p.setPhonenumber(textPhoneNumber.getText());
-                    p.setDateOfBirth(textDateOfBirth.getText());
-                    refreshPeopleList();
-                }
+
+                Person p = new Person(textName.getText(), textEmail.getText(),
+                            textPhoneNumber.getText(), textAddress.getText(), textDateOfBirth.getText());
+                people.add(p);
+                refreshPeopleList();
             }
         });
 
         buttonSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int personNumber = listPeople.getSelectedIndex();
+               Person p = people.get(personNumber);
+               p.setName(textName.getText());
+               p.setEmail(textEmail.getText());
+               p.setPhonenumber(textPhoneNumber.getText());
+               p.setAddress(textAddress.getText());
+               p.setDateOfBirth(textDateOfBirth.getText());
+               refreshPeopleList();
 
             }
         });
@@ -66,9 +74,10 @@ public class Screen extends JFrame{
                if(personNumber >= 0){
                    Person p = people.get(personNumber);
                    textName.setText(p.getName());
-                   textName.setText(p.getEmail());
-                   textName.setText(p.getPhonenumber());
-                   textName.setText(p.getDateOfBirth().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                   textEmail.setText(p.getEmail());
+                   textPhoneNumber.setText(p.getPhonenumber());
+                   textAddress.setText(p.getAddress());
+                   textDateOfBirth.setText(p.getDateOfBirth().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                    labelAge.setText(Integer.toString(p.getAge()) + " years");
                    buttonSave.setEnabled(true);
                }
@@ -77,6 +86,23 @@ public class Screen extends JFrame{
                }
             }
         });
+
+        ClearAll.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int personNumber = listPeople.getSelectedIndex();
+                    Person p = people.get(personNumber);
+                    textName.setText(" ");
+                    textEmail.setText(" ");
+                    textPhoneNumber.setText(" ");
+                    textAddress.setText(" ");
+                    textDateOfBirth.setText(" ");
+                    labelAge.setText(" ");
+                    buttonSave.setEnabled(false);
+
+            }
+        });
+
 
     }
 
@@ -94,24 +120,35 @@ public class Screen extends JFrame{
         refreshPeopleList();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
         Screen screen = new Screen();
+        screen.setSize(700, 450);
         screen.setVisible(true);
 
-        Person sheldon = new Person("Sheldon Lee Cooper", "sheldon@gmail.com", "555 0001", "26/02/1980");
-        Person howard = new Person("Howard Joel Wolowitz", "howard@gmail.com", "555 0002", "01/03/1981");
-        Person bernadette = new Person("Bernadette Rostenkowski-Wolowitz", "bernadette@gmail.com", "555 0002",
-                "01/01/1984");
-        Person raj = new Person("Rajesh Ramayan Koothrappali", "raj@gmail.com", "555 0003", "06/10/1981");
-        Person penny = new Person("Penny Hofstadter", "penny@gmail.com", "555 0004", "02/12/1985");
-        Person leonard = new Person("Leonard Hofstadter", "leonard@gmail.com", "555 0004", "17/05/1980");
-        Person amy = new Person("Amy Farrah Fowler", "amy@gmail.com", "555 0005", "17/12/1979");
-        screen.addPerson(sheldon);
-        screen.addPerson(howard);
-        screen.addPerson(bernadette);
-        screen.addPerson(raj);
-        screen.addPerson(penny);
-        screen.addPerson(leonard);
-        screen.addPerson(amy);
+        screen.panelPic.setLayout(new FlowLayout());
+        BufferedImage penpic = ImageIO.read(new File("penpic.png"));
+        Image dmyPicture = penpic.getScaledInstance(216, 62, Image.SCALE_SMOOTH);
+        JLabel picLabel = new JLabel(new ImageIcon(dmyPicture));
+        screen.panelPic.add(picLabel);
+
+        FileWriter fw  = new FileWriter("Contact.txt", true);
+
+        fw.close();
+
+        FileReader fr = new FileReader("Contact.txt");
+        BufferedReader br = new BufferedReader(fr);
+
+        String line = br.readLine();
+
+        while ((line =br.readLine())!= null) {
+            System.out.println(line);
+            String[] person = line.split(",");
+            Person p  = new Person(person[0], person[1], person[2], person[3],person[4]);
+            screen.addPerson(p);
+
+        }
+
+        br.close();
+        fr.close();
     }
 }

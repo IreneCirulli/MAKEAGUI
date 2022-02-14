@@ -8,19 +8,23 @@ public class Person {
     private String name;
     private String email;
     private String phonenumber;
+    private String address;
     private LocalDate dateOfBirth;
 
-    public Person(String name, String email, String phonenumber, LocalDate dateOfBirth) {
+    public Person(String name, String email, String phonenumber, String address, LocalDate dateOfBirth) {
         this.name = name;
         this.email = email;
         this.phonenumber = phonenumber;
+        this.address = address;
         this.dateOfBirth = dateOfBirth;
+
     }
 
-    public Person(String name, String email, String phonenumber, String dateOfBirth) {
+    public Person(String name, String email, String phonenumber, String address, String dateOfBirth) {
         this.name = name;
         this.email = email;
         this.phonenumber = phonenumber;
+        this.address = address;
         this.setDateOfBirth(dateOfBirth);
     }
 
@@ -47,6 +51,15 @@ public class Person {
     public void setPhonenumber(String phonenumber) {
         this.phonenumber = phonenumber;
     }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
